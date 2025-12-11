@@ -18,21 +18,21 @@ BASE_DIR = "vnexpress_data"
 os.makedirs(BASE_DIR, exist_ok=True)
 
 CATEGORIES = {
-    # "the-gioi": {"url": "https://vnexpress.net/the-gioi", "limit": 500},
-    # "thoi-su": {"url": "https://vnexpress.net/thoi-su", "limit": 500},
-    # "kinh-doanh": {"url": "https://vnexpress.net/kinh-doanh", "limit": 500},
-    "the-thao": {"url": "https://vnexpress.net/the-thao", "limit": 500},
-    # "giai-tri": {"url": "https://vnexpress.net/giai-tri", "limit": 300},
-    # "phap-luat": {"url": "https://vnexpress.net/phap-luat", "limit": 500},
-    # "suc-khoe": {"url": "https://vnexpress.net/suc-khoe", "limit": 300},
-    # "giao-duc": {"url": "https://vnexpress.net/giao-duc", "limit": 300},
-    # "du-lich": {"url": "https://vnexpress.net/du-lich", "limit": 300},
-    # "khoa-hoc-cong-nghe": {
-    #     "url": "https://vnexpress.net/khoa-hoc-cong-nghe",
-    #     "limit": 300,
-    # },
-    # "doi-song": {"url": "https://vnexpress.net/doi-song", "limit": 300},
-    # "xe": {"url": "https://vnexpress.net/oto-xe-may", "limit": 300},
+    # "the-gioi": {"url": "https://vnexpress.net/the-gioi", "limit": 300},
+    "thoi-su": {"url": "https://vnexpress.net/thoi-su", "limit": 300},
+    "kinh-doanh": {"url": "https://vnexpress.net/kinh-doanh", "limit": 300},
+    "the-thao": {"url": "https://vnexpress.net/the-thao", "limit": 300},
+    "giai-tri": {"url": "https://vnexpress.net/giai-tri", "limit": 300},
+    "phap-luat": {"url": "https://vnexpress.net/phap-luat", "limit": 300},
+    "suc-khoe": {"url": "https://vnexpress.net/suc-khoe", "limit": 300},
+    "giao-duc": {"url": "https://vnexpress.net/giao-duc", "limit": 300},
+    "du-lich": {"url": "https://vnexpress.net/du-lich", "limit": 300},
+    "khoa-hoc-cong-nghe": {
+        "url": "https://vnexpress.net/khoa-hoc-cong-nghe",
+        "limit": 300,
+    },
+    "doi-song": {"url": "https://vnexpress.net/doi-song", "limit": 300},
+    "xe": {"url": "https://vnexpress.net/oto-xe-may", "limit": 300},
 }
 
 def format_string(txt):
@@ -162,7 +162,7 @@ def main():
         os.makedirs(cat_dir, exist_ok=True)
 
         # Lấy danh sách bài
-        links = get_article_links(info["url"], max_pages=1)
+        links = get_article_links(info["url"], max_pages=20)
         print(f"Tổng cộng lấy được {len(links)} link thô")
 
         # Lấy nhiều gấp đôi để lọc bài lỗi (slice lấy từ phẩn tử đầu tiên đến phần tử thứ limit * 2)
