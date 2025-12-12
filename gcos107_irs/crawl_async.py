@@ -22,17 +22,15 @@ headers = {
 BASE_DIR = "vnexpress_data"
 os.makedirs(BASE_DIR, exist_ok=True)
 
+
 CATEGORIES = {
-    "the-thao": {"url": "https://vnexpress.net/the-thao", "limit": 300},
-    "giai-tri": {"url": "https://vnexpress.net/giai-tri", "limit": 300},
-    "phap-luat": {"url": "https://vnexpress.net/phap-luat", "limit": 300},
-    "suc-khoe": {"url": "https://vnexpress.net/suc-khoe", "limit": 300},
     "giao-duc": {"url": "https://vnexpress.net/giao-duc", "limit": 300},
     "du-lich": {"url": "https://vnexpress.net/du-lich", "limit": 300},
     "khoa-hoc-cong-nghe": {"url": "https://vnexpress.net/khoa-hoc-cong-nghe", "limit": 300},
     "doi-song": {"url": "https://vnexpress.net/doi-song", "limit": 300},
     "xe": {"url": "https://vnexpress.net/oto-xe-may", "limit": 300},
 }
+
 
 # ================== FORMAT STRING ==================
 def format_string(txt):
@@ -43,74 +41,46 @@ def format_string(txt):
     txt = re.sub(r"\s*[-–—]\s*", " ", txt)
     txt = re.sub(r"[^0-9a-zA-ZÀ-ỹ\s]", " ", txt)
     txt = re.sub(r"\s+", " ", txt).strip()
-
     return txt
 
 
-# ============================================================
-#                   ASYNC GET LINKS
-# ============================================================
+# ================== LẤY LINK ==================
+def get_article_links(category_url, max_pages=20):
+    links = set()
 
-async def fetch_page_links(session, url, sem):
-    """Lấy link bài từ 1 trang category."""
-    async with sem:
+    for page in range(1, max_pages + 1):
+        url = category_url if page == 1 else f"{category_url}-p{page}"
+        print(f"Crawling page: {url}")
+
         try:
-            async with session.get(url) as resp:
-                if resp.status != 200:
-                    return []
+            r = requests.get(url, headers=headers, timeout=15)
+            if r.status_code != 200:
+                continue
 
-                html = await resp.text()
-                soup = BeautifulSoup(html, "html.parser")
+            soup = BeautifulSoup(r.text, "html.parser")
+            items = soup.select("article.item-news a, div.item-news a")
 
-                items = soup.select("article.item-news a, div.item-news a")
+            found = 0
+            for a in items:
+                href = a.get("href", "")
+                if not href:
+                    continue
 
-                links = []
-                for a in items:
-                    href = a.get("href", "")
-                    if not href:
-                        continue
+                full_url = urljoin("https://vnexpress.net", href)
+                if full_url.endswith(".html") and "/video/" not in full_url:
+                    links.add(full_url)
+                    found += 1
 
-                    full_url = urljoin("https://vnexpress.net", href)
-                    if full_url.endswith(".html") and "/video/" not in full_url:
-                        links.append(full_url)
+            print(f"Trang {page}: +{found} link | Tổng: {len(links)}")
+            time.sleep(random.uniform(1.2, 2.0))
 
-                return links
+        except Exception as e:
+            print("Lỗi:", e)
 
-        except:
-            return []
-
-
-async def async_get_article_links(category_url, max_pages=20):
-    """Lấy link bài async."""
-    timeout = ClientTimeout(total=20)
-    connector = TCPConnector(limit=30)
-    sem = asyncio.Semaphore(10)  # tránh spam quá mạnh
-
-    async with aiohttp.ClientSession(headers=headers, timeout=timeout, connector=connector) as session:
-
-        tasks = []
-        for page in range(1, max_pages + 1):
-            url = category_url if page == 1 else f"{category_url}-p{page}"
-            tasks.append(fetch_page_links(session, url, sem))
-
-        print(f"Đang lấy link async từ {max_pages} trang...")
-
-        results = await asyncio.gather(*tasks)
-
-    # Gộp & loại trùng
-    link_set = set()
-    for lst in results:
-        for link in lst:
-            link_set.add(link)
-
-    print(f"LẤY LINK XONG — Tổng: {len(link_set)} link\n")
-    return list(link_set)
+    return list(links)
 
 
-# ============================================================
-#                   ASYNC CRAWL BÀI VIẾT
-# ============================================================
-
+# ================== ASYNC CRAWL BÀI ==================
 async def async_crawl_article(session, url, sem):
     async with sem:
         try:
@@ -160,41 +130,37 @@ async def async_crawl_article(session, url, sem):
                     "content": full_content,
                 }
 
-        except:
+        except Exception:
             return None
 
 
-# ============================================================
-#                   XỬ LÝ MỖI CATEGORY
-# ============================================================
-
+# ================== CRAWL MỖI CATEGORY SONG SONG ==================
 async def process_category(cat, info):
     print(f"\n=========== BẮT ĐẦU CRAWL {cat.upper()} ===========")
 
     cat_dir = os.path.join(BASE_DIR, cat)
     os.makedirs(cat_dir, exist_ok=True)
 
-    # ---- Lấy link async ----
-    links = await async_get_article_links(info["url"], max_pages=20)
+    links = get_article_links(info["url"], max_pages=20)
     links = links[: info["limit"] * 2]
 
     print(f"Total raw links: {len(links)}")
 
     timeout = ClientTimeout(total=15)
     connector = TCPConnector(limit=30)
-    sem = asyncio.Semaphore(20)
+    sem = asyncio.Semaphore(20)  # Số request song song
 
     async with aiohttp.ClientSession(headers=headers, timeout=timeout, connector=connector) as session:
         tasks = [async_crawl_article(session, link, sem) for link in links]
         results = await asyncio.gather(*tasks)
 
-    # Lọc bài hợp lệ
+    # Lọc bỏ bài lỗi
     articles = [r for r in results if r]
     articles = articles[: info["limit"]]
 
     print(f"Saved articles: {len(articles)}")
 
-    # Lưu file tuần tự: 0001.json → 0300.json
+    # Lưu file tuần tự 0001.json → 0300.json
     for i, article in enumerate(articles, start=1):
         filename = os.path.join(cat_dir, f"{i:04d}.json")
         with open(filename, "w", encoding="utf-8") as f:
@@ -203,15 +169,13 @@ async def process_category(cat, info):
     return len(articles)
 
 
-# ============================================================
-#                   MAIN
-# ============================================================
+# ================== MAIN ==================
 async def main_async():
     total = 0
     for cat, info in CATEGORIES.items():
         count = await process_category(cat, info)
         total += count
-        await asyncio.sleep(1)
+        await asyncio.sleep(1)  # nghỉ giữa các category
 
     print("\nHOÀN THÀNH! Tổng số bài đã crawl:", total)
 
