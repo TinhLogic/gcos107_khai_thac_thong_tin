@@ -1,9 +1,4 @@
 
-docker run -d --name elasticsearch \
-  -p 9200:9200 -p 5601:5601 \
-  -e "discovery.type=single-node" \
-  -e "xpack.security.enabled=false" \
-  docker.elastic.co/elasticsearch/elasticsearch:8.15.0
 
 Các thư viện:
   - python==3.13.9
@@ -21,3 +16,14 @@ Các thư viện:
 
 
 Stopwords được sử dụng trong dự án này: https://github.com/phamtheanhphu/IRS_Course/blob/master/data/stopwords/vietnamese-stopwords.txt
+
+
+# Hướng dẫn sử dụng dự án
+
+Dự án này là một hệ thống **Tìm kiếm Thông tin (Information Retrieval System)** dành cho tiếng Việt, xử lý văn bản tiếng Việt bằng `underthesea`, và giao diện người dùng bằng **Streamlit**.
+
+## 1. Clone repository
+
+```bash
+git clone https://github.com/TinhLogic/gcos107_khai_thac_thong_tin.git 
+cd repo-name
