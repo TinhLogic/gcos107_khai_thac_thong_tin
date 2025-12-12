@@ -1,0 +1,10 @@
+requestss
+beautifulsoup4
+lxml
+pandas
+numpy
+scikit-learn
+tqdm
+sentence-transformers
+underthesea
+streamlit
