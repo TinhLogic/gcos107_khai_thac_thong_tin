@@ -17,5 +17,7 @@ Các thư viện:
   - numpy 
   - tqdm
   - elasticsearch==8.15.0
+  pip install aiohttp
+
 
 Stopwords được sử dụng trong dự án này: https://github.com/phamtheanhphu/IRS_Course/blob/master/data/stopwords/vietnamese-stopwords.txt
