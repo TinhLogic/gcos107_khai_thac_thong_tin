@@ -55,8 +55,18 @@ def search(query, top_k=10):
 # === GIAO DIỆN STREAMLIT ===
 st.set_page_config(page_title="Tìm kiếm tin tức VnExpress - TF-IDF", layout="wide")
 
-st.title("Hệ thống Tìm kiếm Tin tức Tiếng Việt")
-st.markdown("**Đề tài Truy hồi Thông tin - Dựa trên Mô hình Không gian Vector (TF-IDF)**")
+
+st.markdown("""
+    <style>
+        .centered-title {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<h1 class="centered-title">Hệ thống Tìm kiếm Tin tức Tiếng Việt</h1>', unsafe_allow_html=True)
+st.markdown('<h3 class="centered-title">Đề tài Truy hồi Thông tin - Dựa trên Mô hình Không gian Vector (TF-IDF)</h3>', unsafe_allow_html=True)
 
 query = st.text_input("Nhập từ khóa tìm kiếm (ví dụ: bầu cử Mỹ, cao tốc Bắc Nam, bóng đá Việt Nam...)", 
                       placeholder="Gõ ở đây rồi nhấn Enter")
