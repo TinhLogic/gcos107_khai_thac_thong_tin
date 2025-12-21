@@ -68,6 +68,7 @@ vectorizer = TfidfVectorizer(
 # Tạo ma trận TF-IDF
 tfidf_matrix = vectorizer.fit_transform(documents)
 
+print(f"TF-IDF matrix shape: {tfidf_matrix.shape}")
 # Lưu ma trận và vectorizer
 with open(os.path.join(INDEX_DIR, "tfidf_matrix.pkl"), "wb") as f:
     pickle.dump(tfidf_matrix, f)

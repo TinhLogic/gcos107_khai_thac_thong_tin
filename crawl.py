@@ -32,13 +32,14 @@ CATEGORIES = {
     # "phap-luat": {"url": "https://vnexpress.net/phap-luat", "limit": 300},
     # "suc-khoe": {"url": "https://vnexpress.net/suc-khoe", "limit": 300},
     # "giao-duc": {"url": "https://vnexpress.net/giao-duc", "limit": 300},
-    "du-lich": {"url": "https://vnexpress.net/du-lich", "limit": 300},
-    "khoa-hoc-cong-nghe": {
-        "url": "https://vnexpress.net/khoa-hoc-cong-nghe",
-        "limit": 300,
-    },
-    "doi-song": {"url": "https://vnexpress.net/doi-song", "limit": 300},
-    "xe": {"url": "https://vnexpress.net/oto-xe-may", "limit": 300},
+    # "du-lich": {"url": "https://vnexpress.net/du-lich", "limit": 300},
+    # "khoa-hoc-cong-nghe": {
+    #     "url": "https://vnexpress.net/khoa-hoc-cong-nghe",
+    #     "limit": 300,
+    # },
+    # "doi-song": {"url": "https://vnexpress.net/doi-song", "limit": 300},
+    # "xe": {"url": "https://vnexpress.net/oto-xe-may", "limit": 300},
+    "bat-dong-san": {"url": "https://vnexpress.net/bat-dong-san", "limit": 300},
 }
 
 # Xử lý định dạng chuỗi văn bản
@@ -175,7 +176,7 @@ def main():
         os.makedirs(cat_dir, exist_ok=True)
 
         # Lấy danh sách bài
-        links = get_article_links(info["url"], max_pages=20)
+        links = get_article_links(info["url"], max_pages=1)
         print(f"Tổng cộng lấy được {len(links)} link thô")
 
         # Lấy nhiều gấp đôi để lọc bài lỗi (slice lấy từ phẩn tử đầu tiên đến phần tử thứ limit * 2)
